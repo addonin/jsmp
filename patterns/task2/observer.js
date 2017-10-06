@@ -1,33 +1,45 @@
-//We have bookmaker’s companies with a lot of kinds of sport and games. 
-//There are players who can make a bet for the special game and follow the result. 
-//When this game is finished, each player who was made a bet to this game will receive 
-//notification about his gain or loss.
-
+//Let prize will x2 for simplicity
 class BookmakerCompany {
     constructor() {
-        this.events = {};
-        this.games = [];
+        this.games = new Map();
+        this.bets = new Map();
     }
 
     addGames(...games) {
-        games.forEach((game) => this.games.push(game));
+        games.forEach(game => this.games.set(game.id, game));
     }
 
-    showCurrentGames() {
-        this.games.forEach((game) => {
-            if (!game.finished) {
-                console.log("Game ID: " + game.id);
-                console.log("Game description: " + game.description);
-            }
-        });
+    showGames() {
+        this.games.forEach(function(game, id) {    
+            console.log("Game ID: " + game.id);
+            console.log("Game description: " + game.description);
+            game.winner === 0 ? console.log("Game is going on") : console.log("Winner: " + game.winner);
+        }, this.games);
     }
 
     takeBet(player, bet) {
-        console.log(player.name);
+        let game = this.bets.get(bet.gameId);
+        let info = {
+            "player": player,
+            "winner": bet.winner,
+            "amount": bet.amount 
+        };
+        if (game) {
+            game.push(info);
+        } else {
+            this.bets.set(bet.gameId, [info])
+        }
     }
 
-    saveGameResult(gameId, result) {
-        
+    saveGameResult(gameId, winner) {
+        let game = this.games.get(gameId);
+        game.winner = winner;  
+        let bets = this.bets.get(gameId);
+        bets.forEach(bet => {
+            let prize = bet.winner === game.winner ? bet.amount * 2 : undefined;
+            bet.player.receiveNotification(
+                new Message(game, prize));
+        });
     }
 }
 
@@ -35,13 +47,11 @@ class Game {
     constructor(id, description) {
         this.id = id;
         this.description = description;
-        this.finished = false;
-        this.result = "Unknown result, game is going on";
+        this.winner = 0;
     }
 
-    finalize(result) {
-        this.finished = true;
-        this.result = result;
+    finalize(winner) {
+        this.winner = winner;
     }
 }
 
@@ -63,8 +73,8 @@ class Player {
     }
 
     receiveNotification(message) {
-        console.log(name + " received:");
-        console.log(message.result);
+        console.log(this.name + " received:");
+        console.log(message.payload());
         let prize = message.prize;
         if (prize) {
             console.log("You won " + prize);
@@ -75,25 +85,35 @@ class Player {
 }
 
 class Message {
-    constructor(result, prize) {
-        this.result = result;
+    constructor(game, prize) {
+        this.game = game;
         this.prize = prize;
+    }
+
+    payload() {
+        return this.game.description + " - " + this.game.winner + " won";
     }
 }
 
 window.bookmakerCompany = new BookmakerCompany();
 bookmakerCompany.addGames(new Game(1, "Football: Dinamo VS Shakhtar"), 
-                          new Game(2, "Box: Mayweather VS McGregor"),
+                          new Game(2, "Hockey: Rockets VS Sharks"),
                           new Game(3, "Basketball: Bulls VS Lakers"));
-bookmakerCompany.showCurrentGames();
+bookmakerCompany.showGames();
+
 const player1 = new Player("Player1");
 const player2 = new Player("Player2");
 const player3 = new Player("Player3");
+
 player1.makeBet(1, 1, 10);
 player1.makeBet(2, 1, 15);
 player2.makeBet(2, 2, 100);
 player2.makeBet(3, 2, 20);
 player3.makeBet(3, 1, 25);
+
+bookmakerCompany.saveGameResult(1, 1);
+bookmakerCompany.saveGameResult(2, 1);
+bookmakerCompany.saveGameResult(3, 2);
 
 
 
