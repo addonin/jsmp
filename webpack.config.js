@@ -2,10 +2,13 @@ const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  entry: ['./src/js/index.js', './src/style/style.scss'],
+  entry: {
+    app: ['./src/js/index.js', './src/style/style.scss'],
+    vendor: ['./lib/lib1.js', './lib/lib2.js'],
+  },
   output: {
-    path: __dirname,
-    filename: 'bundle.js',
+    path: path.join(__dirname, '/target/'),
+    filename: '[name].js',
   },
   devtool: 'source-map',
   module: {
