@@ -4,7 +4,7 @@ module.exports = function (config) {
     browsers: ['PhantomJS'],
     frameworks: ['jasmine'],
     files: [
-      'src/index.js',
+      'src/js/index.js',
       'test/index.spec.js',
     ],
     reporters: ['progress'],
