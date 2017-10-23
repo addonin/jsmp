@@ -1,5 +1,7 @@
+const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   entry: {
@@ -30,5 +32,11 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('common.css'),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      filename: 'vendor.js',
+      minSize: Infinity,
+    }),
+    new BundleAnalyzerPlugin()
   ],
 };
