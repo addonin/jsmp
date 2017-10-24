@@ -33,9 +33,8 @@ module.exports = {
   plugins: [
     new ExtractTextPlugin('common.css'),
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.js',
-      minSize: Infinity,
+      name: 'common',
+      minSize: 1
     }),
     new BundleAnalyzerPlugin()
   ],
