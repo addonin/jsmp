@@ -1,4 +1,4 @@
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./webpack.karma.config.js');
 const commonsChunkPluginIndex = webpackConfig.plugins.findIndex(plugin => plugin.chunkNames);
 webpackConfig.plugins.splice(commonsChunkPluginIndex, 1);
 
@@ -8,12 +8,16 @@ module.exports = function (config) {
     browsers: ['PhantomJS'],
     frameworks: ['jasmine'],
     files: [
-      'test/index.spec.js',
-      'src/js/index.js'
+      /*'src/js/index.js',*/
+      './src/js/calculator.js',
+      /*'test/index.spec.js',*/
+      './test/calculator.spec.js'
     ],
     preprocessors: {
-        'src/js/index.js': ['webpack'],
-        'test/index.spec.js': ['webpack']
+        /*'src/js/index.js': ['webpack'],*/
+        './src/js/calculator.js': ['webpack'],
+        /*'test/index.spec.js': ['webpack'],*/
+        './test/calculator.spec.js': ['webpack']
     },
     reporters: ['progress'],
     webpack: webpackConfig

@@ -29,7 +29,6 @@
     "karmaTest": "karma start --single-run"
   },
   "pre-commit": [
-    "lint",
-    "karmaTest"
+    "lint"
   ]
 }
