@@ -9,6 +9,9 @@ module.exports = function (config) {
     files: [
       'test/**/*.spec.js'
     ],
+    exclude: [
+        'test/index.spec.js'
+    ],
     preprocessors: {
       'test/**/*.spec.js': ['webpack']
     },
