@@ -7,6 +7,7 @@ module.exports = {
   entry: {
     app: ['./src/js/index.js', './src/style/style.scss'],
     vendor: ['./lib/lib1.js', './lib/lib2.js'],
+    calc: './src/js/calculator.js'
   },
   output: {
     path: path.join(__dirname, '/target/'),
