@@ -2,7 +2,11 @@ import Calculator from '../src/js/calculator';
 
 describe('Calculator test', function() {
 
-    let calc = new Calculator();
+    let calc;
+
+    beforeEach(function() {
+        calc = new Calculator();
+    });
 
     it('Should split expression with space delimiter and trim extra spaces', function () {
         expect(calc.split(" 1  + 2  -  3"))
@@ -44,9 +48,33 @@ describe('Calculator test', function() {
             .toBe(true);
     });
 
-    it('Should add two numbers', function() {
+    it('Should calculate expected value using array of operands and operators', function() {
+        expect(calc.handle([100,'+',11,'-',6,'**',2,'/',3,'*',2]))
+            .toBe(87);
+    });
+
+    it('Should process expression and return expected result', function() {
         expect(calc.calculate('100 + 11 - 6 ** 2 / 3 * 2'))
             .toBe(87);
+    });
+
+    it('Should process wrong expression and return Incorrect input and log it', function() {
+        spyOn(console, 'log');
+        expect(calc.calculate('blablabla'))
+            .toBe('Incorrect input');
+        expect(console.log).toHaveBeenCalledWith('Incorrect input');
+    });
+
+    it('Should return number in case array of operands and ops reduced to single-value-array with result', function() {
+        expect(calc.finalize([87]))
+            .toBe(87);
+    });
+
+    it('Should return multi-value-array in case calculation is broken (impossible!!!) and log this event', function() {
+        spyOn(console, 'log');
+        expect(calc.finalize(['87', 'WTF??']))
+            .toEqual(['87', 'WTF??']);
+        expect(console.log).toHaveBeenCalledWith('Unexpected error: multiple results');
     });
 
 });

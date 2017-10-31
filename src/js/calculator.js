@@ -1,5 +1,26 @@
 export default class Calculator {
 
+    constructor() {
+        // literals for math ops with functions for calculation in order of priority
+        this.ops = [{'**': (a, b) => Math.pow(a, b)},
+                    {'*': (a, b) => a * b, '/': (a, b) => a / b},
+                    {'+': (a, b) => a + b, '-': (a, b) => a - b}];
+    }
+
+    calculate(expression) {
+        if (!expression || 0 === expression.length) {
+            return '0';
+        }
+        let operandsAndOperators = this.split(expression);
+        if (this.validateItemsValue(operandsAndOperators) &&
+            this.validateItemsOrder(operandsAndOperators)) {
+            return this.handle(operandsAndOperators);
+        } else {
+            console.log('Incorrect input');
+            return 'Incorrect input'
+        }
+    }
+
     split(expression) {
         return expression.split(" ")
             .filter(item => item !== '')
@@ -28,45 +49,36 @@ export default class Calculator {
         return true;
     }
 
-    calculate(expression) {
-        if (!expression || 0 === expression.length) {
-            return '0';
-        }
-        let operandsAndOperators = this.split(expression);
-
-        if (this.validateItemsValue(operandsAndOperators) &&
-            this.validateItemsOrder(operandsAndOperators)) {
-
-            let ops = [{'**': (a, b) => Math.pow(a, b)},
-                       {'*': (a, b) => a * b, '/': (a, b) => a / b},
-                       {'+': (a, b) => a + b, '-': (a, b) => a - b}],
-                newCalc = [],
-                currentOp;
-            for (let i = 0; i < ops.length; i++) {
-                for (let j = 0; j < operandsAndOperators.length; j++) {
-                    if (ops[i][operandsAndOperators[j]]) {
-                        currentOp = ops[i][operandsAndOperators[j]];
-                    } else if (currentOp) {
-                        newCalc[newCalc.length - 1] =
-                            currentOp(newCalc[newCalc.length - 1], operandsAndOperators[j]);
-                        currentOp = null;
-                    } else {
-                        newCalc.push(operandsAndOperators[j]);
-                    }
-                    console.log(newCalc);
+    handle(operandsAndOperators) {
+        let newCalculation = [], currentOperation;
+        for (let i = 0; i < this.ops.length; i++) {
+            for (let j = 0; j < operandsAndOperators.length; j++) {
+                let currentOperandOrOperator = operandsAndOperators[j];
+                let operation = this.ops[i][currentOperandOrOperator];
+                if (operation) {
+                    currentOperation = operation;
                 }
-                operandsAndOperators = newCalc;
-                newCalc = [];
+                else if (currentOperation) {
+                    let size = newCalculation.length - 1;
+                    newCalculation[size] = currentOperation(newCalculation[size], currentOperandOrOperator);
+                    currentOperation = null;
+                } else {
+                    newCalculation.push(currentOperandOrOperator);
+                }
+                console.log(newCalculation); // trace log, we can see how calculation happens really
             }
-            if (operandsAndOperators.length > 1) {
-                console.log('Unexpected error: multiple results');
-                return operandsAndOperators;
-            } else {
-                return operandsAndOperators[0];
-            }
+            operandsAndOperators = newCalculation;
+            newCalculation = [];
+        }
+        return this.finalize(operandsAndOperators);
+    }
 
+    finalize(operandsAndOperators) {
+        if (operandsAndOperators.length > 1) {
+            console.log('Unexpected error: multiple results');
+            return operandsAndOperators;
         } else {
-            return 'Incorrect input'
+            return operandsAndOperators[0];
         }
     }
 
